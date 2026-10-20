@@ -3,7 +3,7 @@
     把一张 PNG 转成多尺寸 .ico（16/24/32/40/48/64/128/256），给 WinForms/WPF 程序当图标。
 
 .EXAMPLE
-    .\make-icon.ps1 -Png ..\..\icon.png -Out ..\src\MAAConfigLauncher\app.ico
+    .\make-icon.ps1 -Png ..\..\icon.png -Out ..\src\MAA-Integration\app.ico
 
 .NOTES
     - 源图建议 ≥256×256；小图（如 40×40）放大后会糊。

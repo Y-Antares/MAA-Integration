@@ -6,8 +6,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
-    <AssemblyName>MAA-ConfigLauncher</AssemblyName>
-    <RootNamespace>MAAConfigLauncher</RootNamespace>
+    <AssemblyName>MAA-Integration</AssemblyName>
+    <RootNamespace>MAAIntegration</RootNamespace>
 
     <!-- 版本信息：GitHub Release 里会显示 -->
     <Version>1.0.0</Version>
@@ -16,7 +16,7 @@
     <Product>MAA 多配置启动器</Product>
     <AssemblyTitle>MAA 多配置启动器</AssemblyTitle>
     <Description>按顺序用多个配置启动 MAA（MaaAssistantArknights）的小工具</Description>
-    <Company>MAA-ConfigLauncher</Company>
+    <Company>MAA-Integration</Company>
     <Copyright>Copyright © 2026</Copyright>
 
     <!-- exe 图标（资源管理器/任务栏/快捷方式都取这个） -->

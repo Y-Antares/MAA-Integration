@@ -10,7 +10,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MAAConfigLauncher
+namespace MAAIntegration
 {
     /// <summary>一个 MAA 配置（config\gui.new.json 里 Configurations 下的一个键）。</summary>
     internal sealed class MaaConfig

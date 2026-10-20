@@ -4,18 +4,7 @@
 
 适合多账号（官服大号 / 官服小号 / 日服 / 台服…）轮流挂机的场景。
 
-
-
----
-
-## 目录
-
-- [功能](#功能)
-- [方式一：直接下载使用](#方式一直接下载使用)
-- [方式二：自己编译](#方式二自己编译)
-- [运行时它会改什么](#运行时它会改什么)
-- [常见问题](#常见问题)
-- [发布流程（维护者）](#发布流程维护者)
+![界面](PAGE.png)
 
 ---
 
@@ -43,8 +32,8 @@
 
 | 附件 | 是什么 | 需要装 .NET 吗 | 体积 |
 |---|---|---|---|
-| `MAA-ConfigLauncher.exe` | **自包含单文件**，运行时都打包在里面 | 不用，双击即用 | ~150 MB |
-| `MAA-ConfigLauncher-fx-win-x64.zip` | **框架依赖四件套**（exe + dll + deps.json + runtimeconfig.json） | **要装 .NET 9 Desktop Runtime** | ~130 KB |
+| `MAA-Integration.exe` | **自包含单文件**，运行时都打包在里面 | 不用，双击即用 | ~150 MB |
+| `MAA-Integration-fx-win-x64.zip` | **框架依赖四件套**（exe + dll + deps.json + runtimeconfig.json） | **要装 .NET 9 Desktop Runtime** | ~130 KB |
 
 一般选第一个就行。第二个适合已经装了 .NET 9 桌面运行时、或者想看看文件结构的人。
 
@@ -53,22 +42,22 @@
 Release 里附了 `SHA256SUMS.txt`：
 
 ```powershell
-Get-FileHash .\MAA-ConfigLauncher.exe -Algorithm SHA256
+Get-FileHash .\MAA-Integration.exe -Algorithm SHA256
 # 和 SHA256SUMS.txt 里对应的那一行对比，一致就说明没下坏
 ```
 
 ### 3. 放到一个可写目录
 
-解压/移动到一个**普通文件夹**，例如 `D:\Tools\MAA-ConfigLauncher\`。
+解压/移动到一个**普通文件夹**，例如 `D:\Tools\MAA-Integration\`。
 
-> ⚠️ 不要放在 `C:\Program Files`、`C:\Windows`、`System32` 这类系统保护目录——程序需要在 exe 旁边保存 `MAA-ConfigLauncher.settings.json`（记住你的 MAA 目录和勾选），放这些地方会写不进去。
+> ⚠️ 不要放在 `C:\Program Files`、`C:\Windows`、`System32` 这类系统保护目录——程序需要在 exe 旁边保存 `MAA-Integration.settings.json`（记住你的 MAA 目录和勾选），放这些地方会写不进去。
 
 用 zip 版的，把压缩包里的四个文件**解压到同一个文件夹**再运行，不要只拿 exe。
 
 ### 4. 首次运行
 
 1. **完全退出 MAA**（托盘图标也要退出）；MAA 同一目录只允许一个实例，不退出的话切换配置不会生效
-2. 双击 `MAA-ConfigLauncher.exe`
+2. 双击 `MAA-Integration.exe`
    - 如果 Windows 弹「已保护你的电脑 / 未知发布者」→ 点「更多信息」→「仍要运行」（程序没有代码签名，属正常现象）
 3. 确认顶部「MAA 目录」指向你的 MAA 安装目录（含 `MAA.exe` 的那个文件夹）；不对就点「浏览…」重新选
 4. 在列表里勾选要依次运行的配置（默认已勾好非时间戳的配置）
@@ -100,16 +89,16 @@ cd MAA-Integration
 ### 2. 编译（日常调试用）
 
 ```powershell
-dotnet build src/MAAConfigLauncher/MAAConfigLauncher.csproj -c Release
+dotnet build src/MAA-Integration/MAA-Integration.csproj -c Release
 ```
 
-产物在 `src\MAAConfigLauncher\bin\Release\net9.0-windows\`，是**框架依赖**的四个文件：
+产物在 `src\MAA-Integration\bin\Release\net9.0-windows\`，是**框架依赖**的四个文件：
 
 ```
-MAA-ConfigLauncher.exe
-MAA-ConfigLauncher.dll
-MAA-ConfigLauncher.deps.json
-MAA-ConfigLauncher.runtimeconfig.json
+MAA-Integration.exe
+MAA-Integration.dll
+MAA-Integration.deps.json
+MAA-Integration.runtimeconfig.json
 ```
 
 直接双击 exe 就能跑（本机要有 .NET 9 桌面运行时）。
@@ -117,35 +106,35 @@ MAA-ConfigLauncher.runtimeconfig.json
 ### 3. 发布成单文件（给普通用户用）
 
 ```powershell
-dotnet publish src/MAAConfigLauncher/MAAConfigLauncher.csproj -c Release -r win-x64 `
+dotnet publish src/MAA-Integration/MAA-Integration.csproj -c Release -r win-x64 `
   --self-contained true -p:PublishSingleFile=true `
   -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true `
   -o dist
 ```
 
-得到 `dist\MAA-ConfigLauncher.exe` 一个文件，约 150 MB，**不需要目标机器装 .NET**。
+得到 `dist\MAA-Integration.exe` 一个文件，约 150 MB，**不需要目标机器装 .NET**。
 
 ### 4. 发布成四件套（体积小，需运行时）
 
 ```powershell
 # 关键：不要带 -r / --self-contained / PublishSingleFile，否则又会被合并成单文件
-dotnet publish src/MAAConfigLauncher/MAAConfigLauncher.csproj -c Release -o dist-fx
+dotnet publish src/MAA-Integration/MAA-Integration.csproj -c Release -o dist-fx
 
-Compress-Archive -Path dist-fx\* -DestinationPath dist\MAA-ConfigLauncher-fx-win-x64.zip -Force
+Compress-Archive -Path dist-fx\* -DestinationPath dist\MAA-Integration-fx-win-x64.zip -Force
 ```
 
 产物约 130 KB，用户需要装 [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0)。
 
 ### 5. 换图标
 
-图标源图是 `src\MAAConfigLauncher\icon.png`，编译时用的 `app.ico` 由脚本生成：
+图标源图是 `src\MAA-Integration\icon.png`，编译时用的 `app.ico` 由脚本生成：
 
 ```powershell
-# 1) 用新图覆盖 src\MAAConfigLauncher\icon.png（建议 256×256 或 512×512 的正方形 PNG）
+# 1) 用新图覆盖 src\MAA-Integration\icon.png（建议 256×256 或 512×512 的正方形 PNG）
 # 2) 重新生成 8 个尺寸的 ico
-.\tools\make-icon.ps1 -Png .\src\MAAConfigLauncher\icon.png -Out .\src\MAAConfigLauncher\app.ico
+.\tools\make-icon.ps1 -Png .\src\MAA-Integration\icon.png -Out .\src\MAA-Integration\app.ico
 # 3) 重新编译
-dotnet build src/MAAConfigLauncher/MAAConfigLauncher.csproj -c Release
+dotnet build src/MAA-Integration/MAA-Integration.csproj -c Release
 ```
 
 `app.ico` 会被两处使用：编译时嵌入 exe（资源管理器/快捷方式的图标）、以嵌入资源形式在运行时设给窗口（标题栏/Alt+Tab）。换完如果资源管理器还显示旧图标，执行 `ie4uinit.exe -show` 或重启 `explorer.exe`。
@@ -171,7 +160,7 @@ dotnet build src/MAAConfigLauncher/MAAConfigLauncher.csproj -c Release
 | `Gui.StartUpSettings.RunDirectly` | 设为 `true`（仅当你勾了"临时打开自动运行"） | 还原成原值 |
 
 - 只改这两个字段，其余内容、顺序、其他设置都原样保留。
-- 整轮结束 / 点停止 / 出错时都会还原；程序被强杀时会留一份 `MAA-ConfigLauncher.pending-restore.json`，下次启动自动还原。
+- 整轮结束 / 点停止 / 出错时都会还原；程序被强杀时会留一份 `MAA-Integration.pending-restore.json`，下次启动自动还原。
 - 运行期间如果你在 MAA 界面里改"任务完成后操作"，退出时会被还原成运行前的值——改设置请挑不跑的时候。
 
 ---
@@ -188,7 +177,7 @@ MAA 没有自动跑任务，或任务报错时跳过了"完成后操作"。前�
 不行。MAA 在同一安装目录是单实例（互斥体按路径算），第二个实例只会唤醒第一个。要并行只能复制多份 MAA 安装目录。
 
 **Q：设置文件在哪？**
-`MAA-ConfigLauncher.settings.json`，就在 exe 旁边，记 MAA 目录和勾选状态。删掉即恢复默认。
+`MAA-Integration.settings.json`，就在 exe 旁边，记 MAA 目录和勾选状态。删掉即恢复默认。
 
 ---
 
@@ -208,7 +197,7 @@ git push origin v1.0.0
 3. 生成 `SHA256SUMS.txt`；
 4. 把这三个文件挂到对应 Release 上（同时在 Actions 页面留一份 artifact）。
 
-发版前记得把 `src/MAAConfigLauncher/MAAConfigLauncher.csproj` 里的 `<Version>` 和 tag 对齐。
+发版前记得把 `src/MAA-Integration/MAA-Integration.csproj` 里的 `<Version>` 和 tag 对齐。
 
 ---
 

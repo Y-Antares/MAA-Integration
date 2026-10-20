@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace MAAConfigLauncher
+namespace MAAIntegration
 {
     internal static class Program
     {

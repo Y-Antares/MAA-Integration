@@ -27,7 +27,7 @@ jobs:
       # ---- 产物 1：自包含单文件，用户双击即用，不需要装 .NET ----
       - name: 发布 · 自包含单文件
         run: >
-          dotnet publish src/MAAConfigLauncher/MAAConfigLauncher.csproj
+          dotnet publish src/MAA-Integration/MAA-Integration.csproj
           -c Release
           -r win-x64
           --self-contained true
@@ -41,7 +41,7 @@ jobs:
       # 注意：不要带 -r / --self-contained / PublishSingleFile，否则又会被合并成一个文件
       - name: 发布 · 框架依赖四件套
         run: >
-          dotnet publish src/MAAConfigLauncher/MAAConfigLauncher.csproj
+          dotnet publish src/MAA-Integration/MAA-Integration.csproj
           -c Release
           -p:DebugType=none
           -o dist-fx
@@ -49,13 +49,13 @@ jobs:
       - name: 打包框架依赖版
         shell: pwsh
         run: |
-          Compress-Archive -Path dist-fx/* -DestinationPath dist/MAA-ConfigLauncher-fx-win-x64.zip -Force
+          Compress-Archive -Path dist-fx/* -DestinationPath dist/MAA-Integration-fx-win-x64.zip -Force
           Get-ChildItem dist | Select-Object Name, Length
 
       - name: 生成校验值
         shell: pwsh
         run: |
-          foreach ($f in @('MAA-ConfigLauncher.exe','MAA-ConfigLauncher-fx-win-x64.zip')) {
+          foreach ($f in @('MAA-Integration.exe','MAA-Integration-fx-win-x64.zip')) {
             if (Test-Path "dist/$f") {
               $hash = (Get-FileHash "dist/$f" -Algorithm SHA256).Hash
               "$hash  $f" | Out-File -Append -Encoding utf8 dist/SHA256SUMS.txt
@@ -66,7 +66,7 @@ jobs:
       - name: 上传构建产物（每次运行都能在 Actions 页面下载）
         uses: actions/upload-artifact@v4
         with:
-          name: MAA-ConfigLauncher-win-x64
+          name: MAA-Integration-win-x64
           path: dist/
 
       - name: 发布到 GitHub Release（仅 tag 触发）
@@ -74,8 +74,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/MAA-ConfigLauncher.exe
-            dist/MAA-ConfigLauncher-fx-win-x64.zip
+            dist/MAA-Integration.exe
+            dist/MAA-Integration-fx-win-x64.zip
             dist/SHA256SUMS.txt
           generate_release_notes: true
           draft: false

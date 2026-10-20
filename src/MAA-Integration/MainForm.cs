@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MAAConfigLauncher
+namespace MAAIntegration
 {
     internal sealed class LauncherSettings
     {
@@ -47,7 +47,7 @@ namespace MAAConfigLauncher
         public MainForm()
         {
             _appDir = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
-            _settingsFile = Path.Combine(_appDir, "MAA-ConfigLauncher.settings.json");
+            _settingsFile = Path.Combine(_appDir, "MAA-Integration.settings.json");
 
             BuildUi();
             LoadSettings();
@@ -73,7 +73,7 @@ namespace MAAConfigLauncher
 
         private string JournalPath
         {
-            get { return Path.Combine(_appDir, "MAA-ConfigLauncher.pending-restore.json"); }
+            get { return Path.Combine(_appDir, "MAA-Integration.pending-restore.json"); }
         }
 
         private void BuildUi()
@@ -410,7 +410,7 @@ namespace MAAConfigLauncher
                     "\n\n最可能的原因：本程序是被某个受限的进程（沙箱、AI 助手的终端窗口、受限快捷方式等）拉起来的，" +
                     "而不是你在资源管理器里双击打开的。这种令牌下启动的 MAA 也会写不进自己的目录，" +
                     "于是弹出“当前软件所在的位置无法保存数据”。\n\n" +
-                    "建议：关掉本窗口，直接在资源管理器里双击 MAA-ConfigLauncher.exe 重新打开。\n\n" +
+                    "建议：关掉本窗口，直接在资源管理器里双击 MAA-Integration.exe 重新打开。\n\n" +
                     "仍然继续吗？（继续的话 MAA 可能无法保存设置）",
                     "没有写权限", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 
