@@ -1,6 +1,6 @@
 # MAA 多配置启动器
 
-一个 Windows 小工具：把 [MAA（MaaAssistantArknights）](https://github.com/MaaAssistantArknights/MaaAssistantArknights) 的多个**配置**串起来，按顺序一个个启动，跑完自动换下一个。
+一个 Windows 小工具：把 [MAA（MaaAssistantArknights）](https://github.com/MaaAssistantArknights/MaaAssistantArknights) 的多个**配置**，按顺序一个个运行。
 
 适合多账号（官服大号 / 官服小号 / 日服 / 台服…）轮流挂机的场景。
 
@@ -22,31 +22,11 @@
 
 ---
 
-## 方式一：直接下载使用
+## 方式一：下载使用
 
-不需要装 .NET、不需要编译，下载 → 双击 → 用。
+下载exe，点击即用。
 
-### 1. 下载哪个文件
-
-打开仓库的 **Releases** 页面（右侧 `Releases` → 某个版本），有两个附件，按需选一个：
-
-| 附件 | 是什么 | 需要装 .NET 吗 | 体积 |
-|---|---|---|---|
-| `MAA-Integration.exe` | **自包含单文件**，运行时都打包在里面 | 不用，双击即用 | ~150 MB |
-| `MAA-Integration-fx-win-x64.zip` | **框架依赖四件套**（exe + dll + deps.json + runtimeconfig.json） | **要装 .NET 9 Desktop Runtime** | ~130 KB |
-
-一般选第一个就行。第二个适合已经装了 .NET 9 桌面运行时、或者想看看文件结构的人。
-
-### 2. （可选）校验下载是否完整
-
-Release 里附了 `SHA256SUMS.txt`：
-
-```powershell
-Get-FileHash .\MAA-Integration.exe -Algorithm SHA256
-# 和 SHA256SUMS.txt 里对应的那一行对比，一致就说明没下坏
-```
-
-### 3. 放到一个可写目录
+### Note1：放到一个可写目录
 
 解压/移动到一个**普通文件夹**，例如 `D:\Tools\MAA-Integration\`。
 
@@ -54,7 +34,7 @@ Get-FileHash .\MAA-Integration.exe -Algorithm SHA256
 
 用 zip 版的，把压缩包里的四个文件**解压到同一个文件夹**再运行，不要只拿 exe。
 
-### 4. 首次运行
+### Note2：首次运行
 
 1. **完全退出 MAA**（托盘图标也要退出）；MAA 同一目录只允许一个实例，不退出的话切换配置不会生效
 2. 双击 `MAA-Integration.exe`
@@ -69,7 +49,7 @@ Get-FileHash .\MAA-Integration.exe -Algorithm SHA256
 
 ---
 
-## 方式二：自己编译
+## 方式二：自:行编译
 
 ### 环境要求
 
@@ -84,9 +64,7 @@ git clone https://github.com/Y-Antares/MAA-Integration.git
 cd MAA-Integration
 ```
 
-> 如果你 Fork 了或换了地址，把上面的 URL 换成自己的。
-
-### 2. 编译（日常调试用）
+### 2. 编译
 
 ```powershell
 dotnet build src/MAA-Integration/MAA-Integration.csproj -c Release
@@ -101,31 +79,9 @@ MAA-Integration.deps.json
 MAA-Integration.runtimeconfig.json
 ```
 
-直接双击 exe 就能跑（本机要有 .NET 9 桌面运行时）。
+双击 exe 运行。
 
-### 3. 发布成单文件（给普通用户用）
-
-```powershell
-dotnet publish src/MAA-Integration/MAA-Integration.csproj -c Release -r win-x64 `
-  --self-contained true -p:PublishSingleFile=true `
-  -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true `
-  -o dist
-```
-
-得到 `dist\MAA-Integration.exe` 一个文件，约 150 MB，**不需要目标机器装 .NET**。
-
-### 4. 发布成四件套（体积小，需运行时）
-
-```powershell
-# 关键：不要带 -r / --self-contained / PublishSingleFile，否则又会被合并成单文件
-dotnet publish src/MAA-Integration/MAA-Integration.csproj -c Release -o dist-fx
-
-Compress-Archive -Path dist-fx\* -DestinationPath dist\MAA-Integration-fx-win-x64.zip -Force
-```
-
-产物约 130 KB，用户需要装 [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0)。
-
-### 5. 换图标
+### 3. 换icon
 
 图标源图是 `src\MAA-Integration\icon.png`，编译时用的 `app.ico` 由脚本生成：
 
@@ -203,7 +159,7 @@ git push origin v1.0.0
 
 ## 说明
 
-- 本项目只负责"排队启动 / 等待退出 / 切换配置"，不修改 MAA 本体，也不碰游戏。
+- 本项目只负责"排队启动 / 等待退出 / 切换配置"，不修改 MAA 。
 - 与 MAA 官方无关，仅为个人使用的小工具。
 
 ## License
