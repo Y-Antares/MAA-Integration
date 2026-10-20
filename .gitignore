@@ -1,0 +1,14 @@
+# 构建产物
+bin/
+obj/
+dist/
+*.user
+
+# 本地生成的图标中间文件
+build-ico-*.png
+
+# 运行时状态（不要提交）
+*.settings.json
+*.pending-restore.json
+write_probe.tmp
+write_test.tmp

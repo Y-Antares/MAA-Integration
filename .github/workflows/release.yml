@@ -1,0 +1,82 @@
+name: build-and-release
+
+# 打 tag（v1.0.0 这种）时自动编译 + 发布 Release；
+# 推到 main 时只做一次编译检查。
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      # ---- 产物 1：自包含单文件，用户双击即用，不需要装 .NET ----
+      - name: 发布 · 自包含单文件
+        run: >
+          dotnet publish src/MAAConfigLauncher/MAAConfigLauncher.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true
+          -p:DebugType=none
+          -o dist
+
+      # ---- 产物 2：框架依赖，保留 exe/dll/deps.json/runtimeconfig.json 四件套 ----
+      # 注意：不要带 -r / --self-contained / PublishSingleFile，否则又会被合并成一个文件
+      - name: 发布 · 框架依赖四件套
+        run: >
+          dotnet publish src/MAAConfigLauncher/MAAConfigLauncher.csproj
+          -c Release
+          -p:DebugType=none
+          -o dist-fx
+
+      - name: 打包框架依赖版
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist-fx/* -DestinationPath dist/MAA-ConfigLauncher-fx-win-x64.zip -Force
+          Get-ChildItem dist | Select-Object Name, Length
+
+      - name: 生成校验值
+        shell: pwsh
+        run: |
+          foreach ($f in @('MAA-ConfigLauncher.exe','MAA-ConfigLauncher-fx-win-x64.zip')) {
+            if (Test-Path "dist/$f") {
+              $hash = (Get-FileHash "dist/$f" -Algorithm SHA256).Hash
+              "$hash  $f" | Out-File -Append -Encoding utf8 dist/SHA256SUMS.txt
+            }
+          }
+          Get-Content dist/SHA256SUMS.txt
+
+      - name: 上传构建产物（每次运行都能在 Actions 页面下载）
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAA-ConfigLauncher-win-x64
+          path: dist/
+
+      - name: 发布到 GitHub Release（仅 tag 触发）
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/MAA-ConfigLauncher.exe
+            dist/MAA-ConfigLauncher-fx-win-x64.zip
+            dist/SHA256SUMS.txt
+          generate_release_notes: true
+          draft: false
+          prerelease: false
